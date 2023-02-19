@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import React from 'react';
 import { render } from 'ink';
-import App from './ui';
+import App from './ui.js';
 import meow from 'meow';
 
 const cli = meow(`
@@ -9,17 +9,21 @@ const cli = meow(`
 	  $ ne-country-sim
 
 	Options
-		--help, -h  Show help
-		--version, -v  Show version
+		--instructions, -i  Show instructions
+		--credits, -c  Show credits
 
 	Examples
 	  $ ne-country-sim
 `, {
-	importMeta: import.meta,
+	// importMeta: import.meta,
 	flags: {
-		help: {
+		instructions: {
 			type: 'boolean',
-			alias: 'h',
+			alias: 'i',
+		},
+		credits: {
+			type: 'boolean',
+			alias: 'c',
 		},
 	},
 });

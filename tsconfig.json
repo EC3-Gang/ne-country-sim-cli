@@ -1,11 +1,13 @@
 {
 	"extends": "@sindresorhus/tsconfig",
 	"compilerOptions": {
-	  "module": "es2022",
+	  "module": "CommonJS",
 	  "moduleResolution": "Node",
 	  "jsx": "react",
 	  "esModuleInterop": true,
-	  "outDir": "dist"
+	  "outDir": "dist",
+	  "noUnusedLocals": false,
+	  "target": "ES5"
 	},
-	"include": ["source"]
+  "include": ["source"]
 }
