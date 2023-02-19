@@ -1,5 +1,5 @@
-import React, { FC, useState, useEffect, Fragment } from 'react';
-import { Text, useApp, Box, Newline, Spacer, useInput } from 'ink';
+import React, { FC, Fragment, useEffect, useState } from 'react';
+import { Box, Newline, Spacer, Text, useApp, useInput } from 'ink';
 
 const App: FC<{
 	options: {
@@ -44,22 +44,53 @@ const App: FC<{
 	const [GDP, setGDP] = useState(514.1); // in billion
 	const [revenue, setRevenue] = useState(74.7); // in billion
 	const [expenses, setExpenses] = useState(78.2); // in billion
-	const [happiness, setHappiness] = useState(1000);
+	const [happiness, rawSetHappiness] = useState(1000);
+	const [infrastructureExpenses, setInfrastructureExpenses] = useState(0); // in billion
+	// wrapper for setHappiness to prevent it from going either below 0 or over 1000
+	// take note of the fact that some pass in functions
+	const setHappiness = (newHappiness: number | ((preHappiness: number) => number)) => {
+		if (typeof newHappiness === 'number') {
+			if (newHappiness < 0) {
+				rawSetHappiness(0);
+			}
+			else if (newHappiness > 1000) {
+				rawSetHappiness(1000);
+			}
+			else {
+				rawSetHappiness(newHappiness);
+			}
+		}
+		else {
+			const newHappinessNumber = newHappiness(happiness);
+			if (newHappinessNumber < 0) {
+				rawSetHappiness(0);
+			}
+			else if (newHappinessNumber > 1000) {
+				rawSetHappiness(1000);
+			}
+			else {
+				rawSetHappiness(newHappinessNumber);
+			}
+		}
+	};
+
 	const [actions, setActions] = useState([] as string[]);
 	const [events, setEvents] = useState([] as string[]);
 	const [activityLog, setActivityLog] = useState([
 		'Game started!',
 	] as string[]); // in points
-
+	const [gameOverStatus, setGameOverStatus] = useState(false);
 
 	const gameOver = () => {
+		setGameOverStatus(true);
 		console.log('You won! You have successfully managed Singapore for 5 years!');
 		console.log(`Score: ${
-			happiness / 10 + GDP + revenue - expenses
+			Math.round(happiness / 10 + GDP / 10 + revenue / 10 + expenses / 10 + infrastructureExpenses / 10)
 		}`);
 		exit();
 	};
 	const govtOverthrown = () => {
+		setGameOverStatus(true);
 		console.log('You lost! Your happiness level is too low!');
 		exit();
 	};
@@ -74,9 +105,38 @@ const App: FC<{
 	const decreaseNumberbyXPercent = (number: number, percent: number) => {
 		return number * (1 - (percent / 100));
 	};
+	const increaseNumberbyXPercent = (number: number, percent: number) => {
+		return number * (1 + (percent / 100));
+	};
 
 	// start date: 2019-01-01
 	const [date, setDate] = useState(new Date(2019, 0, 1));
+
+	const buildInfrastructure = () => {
+		setActivityLog((preActivityLog) => ['Built infrastructure!', ...preActivityLog]);
+		setInfrastructureExpenses((preExpenses) => preExpenses + 1);
+		setHappiness((preHappiness) => preHappiness + 12);
+	};
+
+	useInput((input: string) => {
+		if (input === 'q') {
+			exit();
+		}
+		if (input === '1') {
+			buildInfrastructure();
+		}
+		if (input === '2') {
+			if (date.getFullYear() === 2020 && date.getMonth() >= 1) {
+				// give 100 billion in relief funds
+				setActivityLog((preActivityLog) => ['Gave 100 billion in relief funds!', ...preActivityLog]);
+				// increase happiness by 20%
+				setHappiness((preHappiness) => increaseNumberbyXPercent(preHappiness, 20));
+
+				// increase infrastructure expenses by 100 billion
+				setInfrastructureExpenses((preExpenses) => preExpenses + 100);
+			}
+		}
+	});
 
 	// increase day by one every 300ms
 	useEffect(() => {
@@ -87,16 +147,11 @@ const App: FC<{
 
 			setGDPAndRevenue(date.getFullYear());
 
-			// end on 12/31/2023
-			if (date.getFullYear() === 2023 && date.getMonth() === 11 && date.getDate() === 31) {
-				gameOver();
-			}
-
 			// budget deficit event on 2019-06-26, decrease happiness by a random 12-15%
 			if (date.getFullYear() === 2019 && date.getMonth() === 5 && date.getDate() === 26) {
 				setActivityLog((preActivityLog) => [...preActivityLog, 'Budget deficit!']);
 				// decrease happiness by a random 12-15%
-				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 4 + 12)));
+				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 4 + 6)));
 			}
 
 			// tap into reserves on 2019-08-09, happiness increases by a random 10-12%
@@ -104,14 +159,20 @@ const App: FC<{
 				setActivityLog((preActivityLog) => ['Tapped into reserves!', ...preActivityLog]);
 				// decrease happiness by a random 12-15%
 
-				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 4 + 12)));
+				setHappiness((preHappiness) => increaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 4 + 2)));
 			}
 
 			// covid strikes on 2020-01-23, happiness decreases by a random 10-15%
 			if (date.getFullYear() === 2020 && date.getMonth() === 0 && date.getDate() === 23) {
 				setActivityLog((preActivityLog) => ['Covid strikes!', ...preActivityLog]);
 				// decrease happiness by 20-25%
-				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 6 + 10)));
+				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 6 + 18)));
+			}
+
+
+			// end on 12/31/2023
+			if (date.getFullYear() === 2023 && date.getMonth() === 11 && date.getDate() === 31) {
+				gameOver();
 			}
 
 			// eslint-disable-next-line no-shadow
@@ -153,7 +214,7 @@ const App: FC<{
 	return (
 		<>
 			{
-				happiness > 500 && <>
+				!gameOverStatus && <>
 					<Box>
 						<Text>
 							NE Country Sim
@@ -172,11 +233,11 @@ const App: FC<{
 								happiness > 700 ? (
 									<Text color="green">[{
 										'#'.repeat(Math.floor(happiness / 10)) + ' '.repeat(100 - Math.floor(happiness / 10))
-									}] {happiness}/1000</Text>
+									}] {Math.floor(happiness)}/1000</Text>
 								) : (
 									<Text color="red">[{
 										'#'.repeat(Math.floor(happiness / 10)) + ' '.repeat(100 - Math.floor(happiness / 10))
-									}] {happiness}/1000</Text>
+									}] {Math.floor(happiness)}/1000</Text>
 								)
 							}
 
@@ -188,11 +249,12 @@ const App: FC<{
 						<Text>
 							Budget
 							<Newline />
-							Revenue: {(revenue / 365 * daysSinceStartOfYear).toFixed(2)} billion
+							Revenue: {(+(revenue / 365 * daysSinceStartOfYear).toFixed(2)).toFixed(2)} billion
 							<Newline />
-							Expenses: {(expenses / 365 * daysSinceStartOfYear).toFixed(2)} billion
+							Expenses: {(+(expenses / 365 * daysSinceStartOfYear).toFixed(2) + infrastructureExpenses).toFixed((2))} billion
 							<Newline />
-							Net: {((revenue - expenses) / 365 * daysSinceStartOfYear).toFixed(2)} billion
+							Net: {(+((revenue - expenses) / 365 * daysSinceStartOfYear).toFixed(2) - infrastructureExpenses)
+								.toFixed(2)} billion
 							<Newline />
 							Days since start of year: {daysSinceStartOfYear}
 						</Text>
@@ -203,12 +265,12 @@ const App: FC<{
 							Choose your action:
 							<Newline />
 							1. Build infrastructure (e.g. schools, hospitals) for your country (cost: 100 million)
-							{actions.map((action, index) => (
-								<Fragment key={index}>
+							{/* show only in 2020 Feb */}
+							{(date.getFullYear() === 2020 && date.getMonth() >= 1) && (
+								<>
 									<Newline />
-									{index + 2}. {action}
-								</Fragment>
-							),
+								2. Provide relief measures like relief funds, GST vouchers and worker wage subsidies (cost: 100 billion)
+								</>
 							)}
 						</Text>
 						<Spacer />
