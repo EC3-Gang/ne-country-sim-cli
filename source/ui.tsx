@@ -80,6 +80,7 @@ const App: FC<{
 		'Game started!',
 	] as string[]); // in points
 	const [gameOverStatus, setGameOverStatus] = useState(false);
+	const [has2BeenChosen, setHas2BeenChosen] = useState(false);
 
 	const gameOver = () => {
 		setGameOverStatus(true);
@@ -118,6 +119,20 @@ const App: FC<{
 		setHappiness((preHappiness) => preHappiness + 12);
 	};
 
+	const giveReliefFunds = () => {
+		if (date.getFullYear() === 2020 && date.getMonth() >= 1) {
+			// give 100 billion in relief funds
+			setActivityLog((preActivityLog) => ['Gave 100 billion in relief funds!', ...preActivityLog]);
+			// increase happiness by 20%
+			setHappiness((preHappiness) => increaseNumberbyXPercent(preHappiness, 27));
+
+			// increase infrastructure expenses by 100 billion
+			setInfrastructureExpenses((preExpenses) => preExpenses + 100);
+
+			setHas2BeenChosen(true);
+		}
+	};
+
 	useInput((input: string) => {
 		if (input === 'q') {
 			exit();
@@ -125,16 +140,8 @@ const App: FC<{
 		if (input === '1') {
 			buildInfrastructure();
 		}
-		if (input === '2') {
-			if (date.getFullYear() === 2020 && date.getMonth() >= 1) {
-				// give 100 billion in relief funds
-				setActivityLog((preActivityLog) => ['Gave 100 billion in relief funds!', ...preActivityLog]);
-				// increase happiness by 20%
-				setHappiness((preHappiness) => increaseNumberbyXPercent(preHappiness, 20));
-
-				// increase infrastructure expenses by 100 billion
-				setInfrastructureExpenses((preExpenses) => preExpenses + 100);
-			}
+		if (input === '2' && !has2BeenChosen) {
+			giveReliefFunds();
 		}
 	});
 
@@ -162,11 +169,15 @@ const App: FC<{
 				setHappiness((preHappiness) => increaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 4 + 2)));
 			}
 
-			// covid strikes on 2020-01-23, happiness decreases by a random 10-15%
+			// covid strikes on 2020-01-23, happiness decreases by a random 18-24%
 			if (date.getFullYear() === 2020 && date.getMonth() === 0 && date.getDate() === 23) {
 				setActivityLog((preActivityLog) => ['Covid strikes!', ...preActivityLog]);
-				// decrease happiness by 20-25%
-				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 6 + 18)));
+				// decrease happiness by 26-32%
+				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 6 + 22)));
+				// decrease GDP by 10%
+				setGDP((preGDP) => decreaseNumberbyXPercent(preGDP, 10));
+				// decrease revenue by 5%
+				setRevenue((preRevenue) => decreaseNumberbyXPercent(preRevenue, 5));
 			}
 
 
@@ -267,7 +278,7 @@ const App: FC<{
 							<Newline />
 							1. Build infrastructure (e.g. schools, hospitals) for your country (cost: 100 million)
 							{/* show only in 2020 Feb */}
-							{(date.getFullYear() === 2020 && date.getMonth() >= 1) && (
+							{(date.getFullYear() === 2020 && date.getMonth() >= 1 && !has2BeenChosen) && (
 								<>
 									<Newline />
 								2. Provide relief measures like relief funds, GST vouchers and worker wage subsidies (cost: 100 billion)
