@@ -192,6 +192,7 @@ const App: FC<{
 				<Text>Game Instructions</Text>
 				{/* eslint-disable-next-line react/no-unescaped-entities */}
 				<Text>You will be managing Singapore from 2019 - 2023. Your country's happiness level will start at 1000, and you will lose if it goes under 500. You will also lose if your economy or budget becomes too low.</Text>
+				<Text>Certain events, like COVID, are predetermined for you.</Text>
 			</>
 		);
 

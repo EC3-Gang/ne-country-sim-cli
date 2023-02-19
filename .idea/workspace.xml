@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e4bfa915-ad4f-4d34-bf4b-3cf62eab3302" name="Changes" comment="spaghetti code">
-      <change afterPath="$PROJECT_DIR$/LICENSE.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    <list default="true" id="e4bfa915-ad4f-4d34-bf4b-3cf62eab3302" name="Changes" comment="kms">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE.md" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/source/ui.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/source/ui.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -59,7 +60,7 @@
       <updated>1676783819490</updated>
       <workItem from="1676783821996" duration="17000" />
       <workItem from="1676783840892" duration="13731000" />
-      <workItem from="1676798990666" duration="7009000" />
+      <workItem from="1676798990666" duration="7630000" />
     </task>
     <task id="LOCAL-00001" summary="a">
       <created>1676783936679</created>
@@ -82,7 +83,14 @@
       <option name="project" value="LOCAL" />
       <updated>1676800834416</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="kms">
+      <created>1676811974156</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1676811974156</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -94,6 +102,7 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="a" />
     <MESSAGE value="spaghetti code" />
-    <option name="LAST_COMMIT_MESSAGE" value="spaghetti code" />
+    <MESSAGE value="kms" />
+    <option name="LAST_COMMIT_MESSAGE" value="kms" />
   </component>
 </project>
