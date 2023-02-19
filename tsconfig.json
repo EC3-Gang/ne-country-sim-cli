@@ -1,0 +1,11 @@
+{
+	"extends": "@sindresorhus/tsconfig",
+	"compilerOptions": {
+	  "module": "es2022",
+	  "moduleResolution": "Node",
+	  "jsx": "react",
+	  "esModuleInterop": true,
+	  "outDir": "dist"
+	},
+	"include": ["source"]
+}
