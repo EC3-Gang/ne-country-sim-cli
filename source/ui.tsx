@@ -125,11 +125,11 @@ const App: FC<{
 	};
 
 	const giveReliefFunds = () => {
-		if (date.getFullYear() === 2020 && date.getMonth() >= 1) {
+		if ((date.getFullYear() === 2020 && date.getMonth() >= 1) || date.getFullYear() === 2021) {
 			// give 100 billion in relief funds
 			setActivityLog((preActivityLog) => ['Gave 100 billion in relief funds!', ...preActivityLog]);
 			// increase happiness by 20%
-			setHappiness((preHappiness) => increaseNumberbyXPercent(preHappiness, 27));
+			setHappiness((preHappiness) => increaseNumberbyXPercent(preHappiness, 22));
 
 			// increase infrastructure expenses by 100 billion
 			setInfrastructureExpenses((preExpenses) => preExpenses + 100);
@@ -161,7 +161,7 @@ const App: FC<{
 
 			// budget deficit event on 2019-06-26, decrease happiness by a random 12-15%
 			if (date.getFullYear() === 2019 && date.getMonth() === 5 && date.getDate() === 26) {
-				setActivityLog((preActivityLog) => [...preActivityLog, 'Budget deficit!']);
+				setActivityLog((preActivityLog) => ['Budget deficit!', ...preActivityLog]);
 				// decrease happiness by a random 12-15%
 				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 4 + 6)));
 			}
@@ -183,6 +183,32 @@ const App: FC<{
 				setGDP((preGDP) => decreaseNumberbyXPercent(preGDP, 10));
 				// decrease revenue by 5%
 				setRevenue((preRevenue) => decreaseNumberbyXPercent(preRevenue, 5));
+			}
+
+			// decrease happiness and revenue by a small random amount on the first day of 2021
+			if (date.getFullYear() === 2021 && date.getMonth() === 0 && date.getDate() === 1) {
+				setActivityLog((preActivityLog) => ['New year!', ...preActivityLog]);
+				// decrease happiness by a random 0-3%
+				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 4 + 5)));
+				// decrease revenue by a random 0-3%
+				setRevenue((preRevenue) => decreaseNumberbyXPercent(preRevenue, Math.floor(Math.random() * 4 + 15)));
+
+				setHas2BeenChosen(false);
+			}
+
+			// decrease happiness by a small amount at the start of 2022
+			if (date.getFullYear() === 2022 && date.getMonth() === 0 && date.getDate() === 1) {
+				setActivityLog((preActivityLog) => ['New year!', ...preActivityLog]);
+				// decrease happiness by a random 5-7%
+				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 3 + 15)));
+			}
+
+
+			// russia invades ukraine on 24 feb 2022, happiness decreases by a random 13-17%
+			if (date.getFullYear() === 2022 && date.getMonth() === 1 && date.getDate() === 24) {
+				setActivityLog((preActivityLog) => ['Russia invades Ukraine!', ...preActivityLog]);
+				// decrease happiness by a random 13-17%
+				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 5 + 13)));
 			}
 
 
@@ -283,7 +309,7 @@ const App: FC<{
 							<Newline />
 							1. Build infrastructure (e.g. schools, hospitals) for your country (cost: 100 million)
 							{/* show only in 2020 Feb */}
-							{(date.getFullYear() === 2020 && date.getMonth() >= 1 && !has2BeenChosen) && (
+							{(((date.getFullYear() === 2020 && date.getMonth() >= 1) || date.getFullYear() === 2021) && !has2BeenChosen) && (
 								<>
 									<Newline />
 								2. Provide relief measures like relief funds, GST vouchers and worker wage subsidies (cost: 100 billion)

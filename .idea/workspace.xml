@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e4bfa915-ad4f-4d34-bf4b-3cf62eab3302" name="Changes" comment="kms">
+    <list default="true" id="e4bfa915-ad4f-4d34-bf4b-3cf62eab3302" name="Changes" comment="life">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source/ui.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/source/ui.tsx" afterDir="false" />
     </list>
@@ -58,7 +58,7 @@
       <workItem from="1676783821996" duration="17000" />
       <workItem from="1676783840892" duration="13731000" />
       <workItem from="1676798990666" duration="8757000" />
-      <workItem from="1676851098858" duration="1995000" />
+      <workItem from="1676851098858" duration="4733000" />
     </task>
     <task id="LOCAL-00001" summary="a">
       <created>1676783936679</created>
@@ -109,7 +109,14 @@
       <option name="project" value="LOCAL" />
       <updated>1676813496026</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="life">
+      <created>1676855683555</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1676855683555</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -123,6 +130,7 @@
     <MESSAGE value="spaghetti code" />
     <MESSAGE value="add LICENSE.md" />
     <MESSAGE value="kms" />
-    <option name="LAST_COMMIT_MESSAGE" value="kms" />
+    <MESSAGE value="life" />
+    <option name="LAST_COMMIT_MESSAGE" value="life" />
   </component>
 </project>
