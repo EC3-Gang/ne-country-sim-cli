@@ -41,9 +41,9 @@ const App: FC<{
 			expenses: 104.15,
 		},
 	};
-	const [GDP, setGDP] = useState(514.1); // in billion
-	const [revenue, setRevenue] = useState(74.7); // in billion
-	const [expenses, setExpenses] = useState(78.2); // in billion
+	const [GDP, setGDP] = useState(0); // in billion
+	const [revenue, setRevenue] = useState(0); // in billion
+	const [expenses, setExpenses] = useState(0); // in billion
 	const [happiness, rawSetHappiness] = useState(1000);
 	const [infrastructureExpenses, setInfrastructureExpenses] = useState(0); // in billion
 	// wrapper for setHappiness to prevent it from going either below 0 or over 1000
@@ -86,7 +86,7 @@ const App: FC<{
 		setGameOverStatus(true);
 		console.log('You won! You have successfully managed Singapore for 5 years!');
 		console.log(`Score: ${
-			Math.round(happiness / 10 + GDP / 10 + revenue / 10 + expenses / 10 + infrastructureExpenses / 10)
+			Math.round(happiness / 10 + GDP / 10 + revenue / 10 - expenses / 10 - infrastructureExpenses / 10)
 		}`);
 		exit();
 	};
@@ -96,10 +96,15 @@ const App: FC<{
 		exit();
 	};
 
-	const setGDPAndRevenue = (year: number) => {
+	const setGDPAndRevenue = (year: Date) => {
+		// only run on the first day of the year
+
 		/* eslint-disable @typescript-eslint/no-non-null-assertion */
-		setGDP(valueMap[year]!.GDP);
-		setRevenue(valueMap[year]!.revenue);
+		if (year.getDate() === 1 && year.getMonth() === 0) {
+			setGDP(valueMap[year.getFullYear()]!.GDP);
+			setRevenue(prevRevenue => prevRevenue + valueMap[year.getFullYear()]!.revenue);
+			setExpenses(prevExpenses => prevExpenses + valueMap[year.getFullYear()]!.expenses);
+		}
 		/* eslint-enable @typescript-eslint/no-non-null-assertion */
 	};
 
@@ -152,7 +157,7 @@ const App: FC<{
 				govtOverthrown();
 			}
 
-			setGDPAndRevenue(date.getFullYear());
+			setGDPAndRevenue(date);
 
 			// budget deficit event on 2019-06-26, decrease happiness by a random 12-15%
 			if (date.getFullYear() === 2019 && date.getMonth() === 5 && date.getDate() === 26) {
@@ -259,7 +264,7 @@ const App: FC<{
 						</Text>
 						<Spacer />
 						<Text>
-							Budget
+							Budget (accumulated over the 5 years):
 							<Newline />
 							Revenue: {(+(revenue / 365 * daysSinceStartOfYear).toFixed(2)).toFixed(2)} billion
 							<Newline />
