@@ -43,7 +43,9 @@ const App: FC<{
 	};
 	const [GDP, setGDP] = useState(0); // in billion
 	const [revenue, setRevenue] = useState(0); // in billion
+	const [baseRevenue, setBaseRevenue] = useState(0); // in billion
 	const [expenses, setExpenses] = useState(0); // in billion
+	const [baseExpenses, setBaseExpenses] = useState(0); // in billion
 	const [happiness, rawSetHappiness] = useState(1000);
 	const [infrastructureExpenses, setInfrastructureExpenses] = useState(0); // in billion
 	// wrapper for setHappiness to prevent it from going either below 0 or over 1000
@@ -86,7 +88,7 @@ const App: FC<{
 		setGameOverStatus(true);
 		console.log('You won! You have successfully managed Singapore for 5 years!');
 		console.log(`Score: ${
-			Math.round(happiness / 10 + GDP / 10 + revenue / 10 - expenses / 10 - infrastructureExpenses / 10)
+			Math.round(happiness / 10 + GDP / 10 + (revenue + baseRevenue) / 10 - (expenses + baseExpenses) / 10 - infrastructureExpenses / 10)
 		}`);
 		exit();
 	};
@@ -102,8 +104,10 @@ const App: FC<{
 		/* eslint-disable @typescript-eslint/no-non-null-assertion */
 		if (year.getDate() === 1 && year.getMonth() === 0) {
 			setGDP(valueMap[year.getFullYear()]!.GDP);
-			setRevenue(prevRevenue => prevRevenue + valueMap[year.getFullYear()]!.revenue);
-			setExpenses(prevExpenses => prevExpenses + valueMap[year.getFullYear()]!.expenses);
+			setRevenue(valueMap[year.getFullYear()]!.revenue);
+			setBaseRevenue((preBaseRevenue => preBaseRevenue + (valueMap[year.getFullYear() - 1]?.revenue ?? 0)));
+			setExpenses(valueMap[year.getFullYear()]!.expenses);
+			setBaseExpenses(preBaseExpenses => preBaseExpenses + (valueMap[year.getFullYear() - 1]?.expenses ?? 0));
 		}
 		/* eslint-enable @typescript-eslint/no-non-null-assertion */
 	};
@@ -125,17 +129,13 @@ const App: FC<{
 	};
 
 	const giveReliefFunds = () => {
-		if ((date.getFullYear() === 2020 && date.getMonth() >= 1) || date.getFullYear() === 2021) {
-			// give 100 billion in relief funds
-			setActivityLog((preActivityLog) => ['Gave 100 billion in relief funds!', ...preActivityLog]);
-			// increase happiness by 20%
-			setHappiness((preHappiness) => increaseNumberbyXPercent(preHappiness, 22));
+		// give 100 billion in relief funds
+		setActivityLog((preActivityLog) => ['Gave 100 billion in relief funds!', ...preActivityLog]);
+		// increase happiness by 20%
+		setHappiness((preHappiness) => increaseNumberbyXPercent(preHappiness, 16.5));
 
-			// increase infrastructure expenses by 100 billion
-			setInfrastructureExpenses((preExpenses) => preExpenses + 100);
-
-			setHas2BeenChosen(true);
-		}
+		// increase infrastructure expenses by 100 billion
+		setInfrastructureExpenses((preExpenses) => preExpenses + 100);
 	};
 
 	useInput((input: string) => {
@@ -145,7 +145,7 @@ const App: FC<{
 		if (input === '1') {
 			buildInfrastructure();
 		}
-		if (input === '2' && !has2BeenChosen) {
+		if (input === '2' && (date.getFullYear() >= 2020 && date.getMonth() >= 1)) {
 			giveReliefFunds();
 		}
 	});
@@ -209,6 +209,13 @@ const App: FC<{
 				setActivityLog((preActivityLog) => ['Russia invades Ukraine!', ...preActivityLog]);
 				// decrease happiness by a random 13-17%
 				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 5 + 13)));
+			}
+
+			// decrease happiness by random amount at start of 2023
+			if (date.getFullYear() === 2023 && date.getMonth() === 0 && date.getDate() === 1) {
+				setActivityLog((preActivityLog) => ['New year!', ...preActivityLog]);
+				// decrease happiness by a random 15-17%
+				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 3 + 17)));
 			}
 
 
@@ -292,11 +299,11 @@ const App: FC<{
 						<Text>
 							Budget (accumulated over the 5 years):
 							<Newline />
-							Revenue: {(+(revenue / 365 * daysSinceStartOfYear).toFixed(2)).toFixed(2)} billion
+							Revenue: {(+(revenue / 365 * daysSinceStartOfYear) + baseRevenue).toFixed(2)} billion
 							<Newline />
-							Expenses: {(+(expenses / 365 * daysSinceStartOfYear).toFixed(2) + infrastructureExpenses).toFixed((2))} billion
+							Expenses: {(+(expenses / 365 * daysSinceStartOfYear) + baseExpenses + infrastructureExpenses).toFixed((2))} billion
 							<Newline />
-							Net: {(+((revenue - expenses) / 365 * daysSinceStartOfYear).toFixed(2) - infrastructureExpenses)
+							Net: {(+(((baseRevenue + revenue) - (baseExpenses + expenses)) / 365 * daysSinceStartOfYear).toFixed(2) - infrastructureExpenses)
 								.toFixed(2)} billion
 							<Newline />
 							Days since start of year: {daysSinceStartOfYear}
@@ -309,10 +316,16 @@ const App: FC<{
 							<Newline />
 							1. Build infrastructure (e.g. schools, hospitals) for your country (cost: 100 million)
 							{/* show only in 2020 Feb */}
-							{(((date.getFullYear() === 2020 && date.getMonth() >= 1) || date.getFullYear() === 2021) && !has2BeenChosen) && (
+							{(date.getFullYear() >= 2020 && date.getMonth() >= 1) && (
 								<>
 									<Newline />
-								2. Provide relief measures like relief funds, GST vouchers and worker wage subsidies (cost: 100 billion)
+								2. {
+										date.getFullYear() !== 2023 ? (
+											'Provide relief measures like relief funds, GST vouchers and worker wage subsidies'
+										) : (
+											'Provide subsidies like subsidising BTO for 1st time buyers, baby bonuses, and car taxes and tobacco tax'
+										)
+									} (cost: 100 billion)
 								</>
 							)}
 						</Text>
@@ -321,12 +334,15 @@ const App: FC<{
 							<Newline />
 							Events/Activity logs
 							<Newline />
-							{activityLog.map((log, index) => (
-								<Fragment key={index}>
-									{log}
-									<Newline />
-								</Fragment>
-							))}
+							{activityLog
+								// first 10 items only
+								.slice(0, 10)
+								.map((log, index) => (
+									<Fragment key={index}>
+										{log}
+										<Newline />
+									</Fragment>
+								))}
 						</Text>
 					</Box>
 
