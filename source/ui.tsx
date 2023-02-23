@@ -122,11 +122,6 @@ const App: FC<{
 	// start date: 2019-01-01
 	const [date, setDate] = useState(new Date(2019, 0, 1));
 
-	const buildInfrastructure = () => {
-		setActivityLog((preActivityLog) => ['Built infrastructure!', ...preActivityLog]);
-		setInfrastructureExpenses((preExpenses) => preExpenses + 1);
-		setHappiness((preHappiness) => preHappiness + 12);
-	};
 
 	const giveReliefFunds = () => {
 		// give 100 billion in relief funds
@@ -142,10 +137,7 @@ const App: FC<{
 		if (input === 'q') {
 			exit();
 		}
-		if (input === '1') {
-			buildInfrastructure();
-		}
-		if (input === '2' && (date.getFullYear() >= 2020 && date.getMonth() >= 1)) {
+		if (input === '1' && (date.getFullYear() >= 2020 && date.getMonth() >= 1)) {
 			giveReliefFunds();
 		}
 	});
@@ -218,6 +210,13 @@ const App: FC<{
 				setHappiness((preHappiness) => decreaseNumberbyXPercent(preHappiness, Math.floor(Math.random() * 3 + 17)));
 			}
 
+
+			// at the end of every year increase happiness by this year's expenditure / 10 due to infrastructure building
+			if (date.getMonth() === 11 && date.getDate() === 31) {
+				const noOfInfrastructure = Math.floor(expenses / 10);
+				// show in logs how much infrastructure was build
+				setHappiness((preHappiness) => preHappiness + noOfInfrastructure);
+			}
 
 			// end on 12/31/2023
 			if (date.getFullYear() === 2023 && date.getMonth() === 11 && date.getDate() === 31) {
@@ -297,11 +296,15 @@ const App: FC<{
 						</Text>
 						<Spacer />
 						<Text>
-							Budget (accumulated over the 5 years):
+							Budget:
 							<Newline />
-							Revenue: {(+(revenue / 365 * daysSinceStartOfYear) + baseRevenue).toFixed(2)} billion
+							Revenue (accumulated): {(+(revenue / 365 * daysSinceStartOfYear) + baseRevenue).toFixed(2)} billion
 							<Newline />
-							Expenses: {(+(expenses / 365 * daysSinceStartOfYear) + baseExpenses + infrastructureExpenses).toFixed((2))} billion
+							Revenue (this year): {+(revenue / 365 * daysSinceStartOfYear).toFixed(2)} billion
+							<Newline />
+							Expenses (accumulated): {(+(expenses / 365 * daysSinceStartOfYear) + baseExpenses + infrastructureExpenses).toFixed((2))} billion
+							<Newline />
+							Expenses (this year): {+(expenses / 365 * daysSinceStartOfYear).toFixed(2)} billion
 							<Newline />
 							Net: {(+(((baseRevenue + revenue) - (baseExpenses + expenses)) / 365 * daysSinceStartOfYear).toFixed(2) - infrastructureExpenses)
 								.toFixed(2)} billion
@@ -314,12 +317,10 @@ const App: FC<{
 							<Newline />
 							Choose your action:
 							<Newline />
-							1. Build infrastructure (e.g. schools, hospitals) for your country (cost: 100 million)
-							{/* show only in 2020 Feb */}
 							{(date.getFullYear() >= 2020 && date.getMonth() >= 1) && (
 								<>
 									<Newline />
-								2. {
+									1. {
 										date.getFullYear() !== 2023 ? (
 											'Provide relief measures like relief funds, GST vouchers and worker wage subsidies'
 										) : (
