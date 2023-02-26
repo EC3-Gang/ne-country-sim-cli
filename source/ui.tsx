@@ -314,13 +314,9 @@ const App: FC<{
 					</Box>
 					<Box>
 						<Text>
-							{(date.getFullYear() >= 2020 && date.getMonth() >= 1) && (
-								<>
-									<Newline />
-										Choose your action:
-									<Newline />
-								</>
-							)}
+							<Newline />
+							Choose your action:
+							<Newline />
 							{(date.getFullYear() >= 2020 && date.getMonth() >= 1) && (
 								<>
 									<Newline />
